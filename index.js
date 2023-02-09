@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 
-import Videos from './dbModal.js'
+import Blogs from './dbModal.js'
 
 // app config
 const app = express();
@@ -27,7 +27,7 @@ mongoose.connect(dbURI, {
 app.get('/', (req, res) => res.status(200).send('hello world'));
 
 app.get('/v2/posts', (req, res) => {
-    Videos.find((err, data) => {
+    Blogs.find((err, data) => {
         if(err) {
             res.status(500).send(err)
         } else {
@@ -37,7 +37,7 @@ app.get('/v2/posts', (req, res) => {
 });
 
 app.get('/v2/posts/:id', (req, res) => {
-    Videos.findById(req.params.id)
+    Blogs.findById(req.params.id)
     .then((data) => res.status(200).send(data))
     .catch((err) => res.status(500).send(err))
     });
@@ -45,8 +45,8 @@ app.get('/v2/posts/:id', (req, res) => {
 app.post('/v2/posts', (req, res) => {
     // Post request is add data to the database
     // it will let us ADD a video Document to the video COLLECTION
-    const dbVideos = req.body;
-    Videos.create(dbVideos, (err, data) => {
+    const dbBlogs = req.body;
+    Blogs.create(dbBlogs, (err, data) => {
         if(err) {
             res.status(500).send(err)
         } else {
@@ -56,14 +56,14 @@ app.post('/v2/posts', (req, res) => {
 });
 
 app.put('/v2/posts/update/:id', (req, res) => {
-    const dbVideos = req.body;
-    Videos.findByIdAndUpdate(req.params.id, dbVideos)
+    const dbBlogs = req.body;
+    Blogs.findByIdAndUpdate(req.params.id, dbBlogs)
     .then((data) => res.status(200).send(data))
     .catch((err) => res.status(500).send(err))
 })
 
 app.delete('/v2/posts/:id', (req, res) => {
-    Videos.findByIdAndDelete(req.params.id)
+    Blogs.findByIdAndDelete(req.params.id)
     .then((data) => res.status(200).send(data))
     .catch((err) => res.status(500).send(err))
     });

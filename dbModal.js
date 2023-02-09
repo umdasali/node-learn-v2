@@ -1,14 +1,12 @@
 import mongoose from "mongoose";
 
-const tiktokSchema = mongoose.Schema({
-    url: String,
-    channel: String,
-    song: String,
-    likes: String,
-    messages: String,
-    desc: String,
-    shares: String,
-})
+const blogSchema = mongoose.Schema({
+    imageURL: String,
+    title: String,
+    description: String,
+    blog_type: String,
+    video_link: String,
+}, {timestamps: true})
 
 // collection inside the database
-export default mongoose.model('tiktokVideo', tiktokSchema)
+export default mongoose.model('blogs', blogSchema)
