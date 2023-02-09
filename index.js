@@ -1,7 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
 
-import data from './data.js';
 import Videos from './dbModal.js'
 
 // app config
@@ -27,8 +26,6 @@ mongoose.connect(dbURI, {
 // endpoints
 app.get('/', (req, res) => res.status(200).send('hello world'));
 
-app.get('/v1/post', (req, res) => res.status(200).send(data));
-
 app.get('/v2/posts', (req, res) => {
     Videos.find((err, data) => {
         if(err) {
@@ -37,7 +34,13 @@ app.get('/v2/posts', (req, res) => {
             res.status(200).send(data)
         }
     })
-})
+});
+
+app.get('/v2/posts/:id', (req, res) => {
+    Videos.findById(req.params.id)
+    .then((data) => res.status(200).send(data))
+    .catch((err) => res.status(500).send(err))
+    });
 
 app.post('/v2/posts', (req, res) => {
     // Post request is add data to the database
@@ -50,7 +53,20 @@ app.post('/v2/posts', (req, res) => {
             res.status(201).send(data)
         }
     })
+});
+
+app.put('/v2/posts/update/:id', (req, res) => {
+    const dbVideos = req.body;
+    Videos.findByIdAndUpdate(req.params.id, dbVideos)
+    .then((data) => res.status(200).send(data))
+    .catch((err) => res.status(500).send(err))
 })
+
+app.delete('/v2/posts/:id', (req, res) => {
+    Videos.findByIdAndDelete(req.params.id)
+    .then((data) => res.status(200).send(data))
+    .catch((err) => res.status(500).send(err))
+    });
 
 // listener
 app.listen(port, () => console.log(`listening on localhost ${port}`));
