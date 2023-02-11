@@ -27,13 +27,29 @@ mongoose.connect(dbURI, {
 app.get('/', (req, res) => res.status(200).send('hello world'));
 
 app.get('/v2/posts', (req, res) => {
-    Blogs.find((err, data) => {
-        if(err) {
-            res.status(500).send(err)
-        } else {
-            res.status(200).send(data)
+    var page = parseInt(req.query.page) || 1; //for next page pass 1 here
+    var limit = parseInt(req.query.limit) || 3;
+    var query = {};
+    Blogs.find(query)
+      .sort({ update_at: -1 })
+      .skip((page - 1) * limit) //Notice here
+      .limit(limit)
+      .exec((err, doc) => {
+        if (err) {
+          return res.json(err);
         }
-    })
+        Blogs.countDocuments(query).exec((count_error, count) => {
+          if (err) {
+            return res.json(count_error);
+          }
+          return res.json({
+            total: count,
+            page: page,
+            pageSize: doc.length,
+            result: doc
+          });
+        });
+      });
 });
 
 app.get('/v2/posts/:id', (req, res) => {
