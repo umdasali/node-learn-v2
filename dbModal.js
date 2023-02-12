@@ -4,6 +4,7 @@ const blogSchema = mongoose.Schema({
     imageURL: String,
     title: String,
     description: String,
+    short_desc: String,
     blog_type: String,
     video_link: String,
 }, {timestamps: true})
