@@ -1,88 +1,35 @@
 import express from "express";
-import mongoose from "mongoose";
 
-import Blogs from './dbModal.js'
-
-// app config
+// Creating an instance of Express app
 const app = express();
-const port = 9000;
 
-// middleware
-app.use(express.json());
+// Middleware to handle CORS
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'),
-    res.setHeader('Access-Control-Allow-Headers', '*'),
-    next()
-})
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-// DB config
-const dbURI = 'mongodb+srv://umdasali:Atish825@cluster0.zqshlec.mongodb.net/?retryWrites=true&w=majority';
-
-mongoose.connect(dbURI, { 
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
- })
-
-// endpoints
-app.get('/', (req, res) => res.status(200).send('hello world'));
-
-app.get('/v2/posts', (req, res) => {
-    var page = parseInt(req.query.page) || 1; //for next page pass 1 here
-    var limit = parseInt(req.query.limit) || 3;
-    var query = {};
-    Blogs.find(query)
-      .sort({ update_at: -1 })
-      .skip((page - 1) * limit) //Notice here
-      .limit(limit)
-      .exec((err, doc) => {
-        if (err) {
-          return res.json(err);
-        }
-        Blogs.countDocuments(query).exec((count_error, count) => {
-          if (err) {
-            return res.json(count_error);
-          }
-          return res.json({
-            total: count,
-            page: page,
-            pageSize: doc.length,
-            result: doc
-          });
-        });
-      });
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
 });
 
-app.get('/v2/posts/:id', (req, res) => {
-    Blogs.findById(req.params.id)
-    .then((data) => res.status(200).send(data))
-    .catch((err) => res.status(500).send(err))
-    });
-
-app.post('/v2/posts', (req, res) => {
-    // Post request is add data to the database
-    // it will let us ADD a video Document to the video COLLECTION
-    const dbBlogs = req.body;
-    Blogs.create(dbBlogs, (err, data) => {
-        if(err) {
-            res.status(500).send(err)
-        } else {
-            res.status(201).send(data)
-        }
-    })
+// Your API endpoints
+app.get('/api/data', (req, res) => {
+  // Your code to handle the GET request
+  res.json({ message: 'Hello, World!' });
 });
 
-app.put('/v2/posts/update/:id', (req, res) => {
-    const dbBlogs = req.body;
-    Blogs.findByIdAndUpdate(req.params.id, dbBlogs)
-    .then((data) => res.status(200).send(data))
-    .catch((err) => res.status(500).send(err))
-})
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
 
-app.delete('/v2/posts/:id', (req, res) => {
-    Blogs.findByIdAndDelete(req.params.id)
-    .then((data) => res.status(200).send(data))
-    .catch((err) => res.status(500).send(err))
-    });
-
-// listener
-app.listen(port, () => console.log(`listening on localhost ${port}`));
+// Starting the server
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
