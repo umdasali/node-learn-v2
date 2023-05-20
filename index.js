@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 });
 
 // Your API endpoints
-app.get('/api/data', (req, res) => {
+app.get('/', (req, res) => {
   // Your code to handle the GET request
   res.json({ message: 'Hello, World!' });
 });
